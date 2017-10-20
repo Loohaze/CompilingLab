@@ -1,0 +1,16 @@
+public class Test{
+    private void gcd(int u, int v){
+	    if(v!=0)
+		    u=v;
+	    else if(v==0)
+		    u=u-u/v*v;
+	    else if(v!1)
+		    u=1;
+  	    int c=100;
+	    while(c<0){
+		    if(c>=0){
+			    c=c-1;
+		    }
+	    }
+    }
+}
