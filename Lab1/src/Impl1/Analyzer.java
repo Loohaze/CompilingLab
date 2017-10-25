@@ -1,13 +1,15 @@
+package Impl1;
+
 import java.io.*;
 
 public class Analyzer {
 
     private static char[] input = new char[500];
-    private static int code;
+    private static int code; // token 中的识别码
     private static int p; // input 数组中指针的位置
     private static int m; // word 数组中指针的位置
-    private static long sum;
-    private static char[] word;
+    private static long sum; // 记录整数的大小
+    private static char[] word; // 记录变量名称
     private static final String inputFile = "input.txt";
 
     private static String[] keywords = {"public","private","protected","final","void","static","strictfp","abstract","transient","synchronized","volatile","native",
@@ -15,6 +17,10 @@ public class Analyzer {
                                  "if","else","do","while","for","switch","case","default","break","continue","return","try","catch","finally",
                                  "package","import","throw","throws","extends","implements","this","super","instanceof","new",
                                  "true","false","null","goto","const"};
+
+    private static String[] symbols = {"+=","+","-=","-","*=","*/","*","/=","//","/*","/",">=",">","<=","<","==","=","&&","&","||","|","!=","!","(",")","[","]","{","}",
+                                         ",",":",";","\'","\""};
+
 
     private void parseInput() throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(inputFile));
@@ -69,7 +75,7 @@ public class Analyzer {
             if (sum > Integer.MAX_VALUE){
                 code = -1;                                          //overflow code = -1
             }
-        }else {
+        }else {                                         // 因为各种符号可能存在字符上的包含关系，所以用是否存在在数组中不好判断
             m = 0;
             word[m++] = ch;
 
@@ -263,7 +269,7 @@ public class Analyzer {
                 case -2:
                     break;
                 case -3:
-                    System.out.println(new Token("undefined character"));
+                    System.out.println(new Token("undefined character "));
                     break;
                 default:
                     System.out.println(new Token(code,char2String(word)));
