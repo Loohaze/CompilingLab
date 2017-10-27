@@ -1,4 +1,4 @@
-package RE2DFAo;
+package RE2DFAo.entity;
 
 import java.util.LinkedList;
 import java.util.List;

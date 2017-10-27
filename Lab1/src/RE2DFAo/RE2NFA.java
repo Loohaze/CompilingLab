@@ -1,17 +1,24 @@
 package RE2DFAo;
 
+import RE2DFAo.entity.NFA;
+import RE2DFAo.entity.NFAState;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.Stack;
 
 public class RE2NFA {
 
     public static void main(String[] args) {
         RE2NFA re2NFA = RE2NFA.getRE2NFA();
-        HashMap<String,NFAState> map = re2NFA.thompson("abc|c*b···");
-        System.out.println(map.get("BEGIN").getState());
-        System.out.println(map.get("END").getState());
+        re2NFA.re2nfa("abc|c*b···");
+
+        NFA nfa = re2NFA.nfa;
+        System.out.println(nfa.getBegin().getState());
+        System.out.println(getLastState(nfa.getBegin()).getState());
+        System.out.println(nfa.getStates().size());
+        System.out.println(nfa.getEnds().size());
     }
 
     private static RE2NFA re2NFA;
@@ -19,7 +26,7 @@ public class RE2NFA {
     private NFA nfa;
 
     private RE2NFA(){
-        nfa = new NFA(null,new ArrayList<>());
+        nfa = new NFA(null,new ArrayList<>(),new HashSet<>());
     }
 
     public static RE2NFA getRE2NFA() {
@@ -31,8 +38,17 @@ public class RE2NFA {
         }
     }
 
-    public NFA re2NFA(String re){
-        return null;
+    /**
+     * TODO 暂时为一个re形成NFA，没有做多个NFA merge
+     * @param re
+     * @return
+     */
+    public NFA re2nfa(String re){
+        HashMap<String,NFAState> map = thompson(re);
+        nfa.setBegin(map.get("BEGIN"));
+        nfa.getEnds().add(map.get("END"));
+
+        return nfa;
     }
 
 
@@ -99,6 +115,8 @@ public class RE2NFA {
             // ch 是一个 character
             else {
                 beginState.addEdge(String.valueOf(ch),endState);
+
+                nfa.getStates().add(String.valueOf(ch));
 
                 stack.push(beginState);
             }

@@ -1,9 +1,7 @@
-import RE2DFAo.NFA;
-import RE2DFAo.NFAState;
+import RE2DFAo.entity.NFAState;
 import RE2DFAo.RE2NFA;
 
 import java.util.HashMap;
-import java.util.Stack;
 
 public class Test {
 
@@ -72,6 +70,8 @@ public class Test {
         if (begin.getNexts().size() == 1){
             System.out.println(begin.getState() + " " + begin.getEdges().get(0)+ " " + begin.getNexts().get(0).getState());
             printState(begin.getNexts().get(0));
+        }else{
+
         }
     }
 }
