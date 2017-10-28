@@ -1,3 +1,8 @@
+import RE2DFAo.Exception.DFAStatesException;
+import RE2DFAo.NFA2DFA;
+import RE2DFAo.entity.DFA;
+import RE2DFAo.entity.DFAState;
+import RE2DFAo.entity.NFA;
 import RE2DFAo.entity.NFAState;
 import RE2DFAo.RE2NFA;
 
@@ -7,13 +12,20 @@ public class Test {
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DFAStatesException {
 //        testUnion();
 //        testStar();
-        testRE2NFA("abc|c*b···");
+//        testRE2NFA("abc|c*b···");
 //        System.out.println("ε");
+
+        testNFA2DFA();
     }
 
+    public static void testNFA2DFA() throws DFAStatesException {
+        NFA nfa = RE2NFA.getRE2NFA().re2nfa("ab|*");
+        DFA dfa = NFA2DFA.getNfa2DFA().nfa2dfa(nfa);
+        printDFA(dfa);
+    }
     /**
      *  '|' 操作
      */
@@ -73,6 +85,29 @@ public class Test {
         }else{
 
         }
+    }
+
+
+    //TODO
+    public static void printDFA(DFA dfa){
+        DFAState begin = dfa.getBegin();
+        for (String edge : dfa.getEdges()){
+            System.out.print("\t" + edge);
+        }
+        System.out.println();
+
+        System.out.print(begin.getState());
+        for (int i = 0; i < dfa.getEdges().size(); i++){
+            System.out.print("\t"+begin.getNexts().get(i).getState());
+        }
+
+        DFAState dfaState = begin;
+        for (int i = 0; i < dfa.getDfaStatesSet().size(); i++){
+
+        }
+//        while(true){
+//            System.out.print(dfa.getBegin());
+//        }
     }
 }
 

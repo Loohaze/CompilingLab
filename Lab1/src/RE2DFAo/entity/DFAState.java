@@ -25,7 +25,7 @@ public class DFAState {
         this.nexts = new LinkedList<>();
     }
 
-    private void addEdge(String edge,DFAState next){
+    public void addEdge(String edge,DFAState next){
         edges.add(edge);
         nexts.add(next);
     }
