@@ -5,11 +5,9 @@ import RE2DFAo.entity.DFA;
 import RE2DFAo.entity.DFAState;
 import RE2DFAo.entity.NFA;
 import RE2DFAo.entity.NFAState;
+import com.sun.istack.internal.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class NFA2DFA {
 
@@ -55,6 +53,9 @@ public class NFA2DFA {
     private Set<Set<Integer>> dfaStatesSet;  //dfa中的状态的nfa集合的集合
     private ArrayList<DFAState> dfaSet; // dfa中各个状态的集合
     private ArrayList<DFAState> dfaEnds;// dfa的终态
+    private List<DFAState> startStateSet;
+    private List<DFAState> endStateSet;
+    private HashMap<Integer,List<DFAState>> equivalentMap;
 
     public DFA nfa2dfa(NFA nfa) throws DFAStatesException {
         edges = nfa.getStates();
@@ -68,11 +69,29 @@ public class NFA2DFA {
         index = 1;
         constructTable(dfaBegin,2,1);
 
+        startStateSet = new ArrayList<>();
+        endStateSet = new ArrayList<>();
         dfaEnds = new ArrayList<>();
         getDFAEnds(nfa.getEnds());
 
+        dfaOptimize();  // 最小化DFA
         return new DFA(dfaBegin,dfaEnds,dfaSet,edges,dfaStatesSet);
     }
+
+
+    public void dfaOptimize(){
+
+        equivalentMap = new HashMap<>();
+        equivalentMap.put(1,startStateSet);
+        equivalentMap.put(2,endStateSet);
+        divideStates(startStateSet,3,equivalentMap);
+        divideStates(endStateSet,1000,equivalentMap);
+
+        
+    }
+
+
+
 
     /**
      * 计算epsilon闭包
@@ -153,10 +172,78 @@ public class NFA2DFA {
         for (DFAState dfaState : dfaSet){
             for (NFAState nfaState : nfaEnds){
                 if (dfaState.getStates().contains(nfaState) && !dfaEnds.contains(dfaState)){
+                    endStateSet.add(dfaState);
                     dfaEnds.add(dfaState);
+                }else {
+                    startStateSet.add(dfaState);
                 }
             }
         }
+    }
+
+    private void divideStates(List<DFAState> toBeDivided,int index,HashMap<Integer,List<DFAState>> equivalentMap){
+        List<DFAState> subjectsStates1 = new ArrayList<>();
+        List<DFAState> subjectsStates2 = new ArrayList<>();
+        if (toBeDivided.size() > 1){
+            DFAState base = toBeDivided.get(0);
+            subjectsStates1.add(base);
+            for (int i = 1; i < toBeDivided.size(); i++){
+                if (isEquivalent(base,toBeDivided.get(i),equivalentMap)){
+                    subjectsStates1.add(toBeDivided.get(i));
+                }
+                else{
+                    subjectsStates2.add(toBeDivided.get(i));
+                }
+            }
+            if (equivalentMap.containsValue(subjectsStates1) || equivalentMap.containsValue(subjectsStates2)){
+                return;
+            }
+            equivalentMap.remove(getIndex(base,equivalentMap));
+            equivalentMap.put(index++,subjectsStates1);
+            equivalentMap.put(index++,subjectsStates2);
+        }else{
+            return;
+        }
+        if (subjectsStates1.size() > 1){
+            divideStates(subjectsStates1,index,equivalentMap);
+        }
+        if (subjectsStates2.size() > 1){
+            divideStates(subjectsStates2,index,equivalentMap);
+        }
+    }
+
+    /**
+     * 判断两个DFAState是否等价
+     * @param state1
+     * @param state2
+     * @param map
+     * @return
+     */
+    private boolean isEquivalent(DFAState state1, DFAState state2, HashMap<Integer,List<DFAState>> map){
+        boolean flag = true;
+        for (int i = 0; i < state1.getEdges().size(); i++){
+            DFAState next1 = state1.getNexts().get(i);
+            DFAState next2 = state2.getNexts().get(i);
+            if (getIndex(next1,map)!=getIndex(next2,map)){
+                flag = false;
+            }
+        }
+        return flag;
+    }
+
+    /**
+     * 判断DFAState在哪个状态集中
+     * @param state
+     * @param map
+     * @return
+     */
+    private int getIndex(DFAState state, HashMap<Integer,List<DFAState>> map){
+        for (Map.Entry<Integer,List<DFAState>> entry : map.entrySet()){
+            if (entry.getValue().contains(state)){
+                return entry.getKey();
+            }
+        }
+        return -1;
     }
 
     /**

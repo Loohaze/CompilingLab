@@ -7,6 +7,8 @@ import java.util.Stack;
 
 public class RENormalize {
 
+    private static RENormalize reNormalize;
+
     private String regularExpression;
 
     private static final ArrayList<Character> OPERATION_PRIORITY = new ArrayList<>(Arrays.asList('|','.','*'));
@@ -17,13 +19,19 @@ public class RENormalize {
     }
 
     public String getRegularExpression() {
-        return regularExpression;
+        return infix2postfix();
     }
 
-    public RENormalize(String regularExpression) {
-        this.regularExpression = regularExpression;
+    private RENormalize(String re) {
+        this.regularExpression = re;
     }
 
+    public static RENormalize getRENormalize(String re) {
+        if (reNormalize == null){
+            return new RENormalize(re);
+        }
+        return reNormalize;
+    }
 
     private String addConnectDot(){
         StringBuffer sb  = new StringBuffer();
@@ -88,8 +96,4 @@ public class RENormalize {
     }
 
 
-    public static void main(String[] args) {
-        RENormalize re = new RENormalize("(a|b)*.(ab)");
-        System.out.println(re.infix2postfix());
-    }
 }

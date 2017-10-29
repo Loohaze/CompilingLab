@@ -1,5 +1,6 @@
 import RE2DFAo.Exception.DFAStatesException;
 import RE2DFAo.NFA2DFA;
+import RE2DFAo.RENormalize;
 import RE2DFAo.entity.DFA;
 import RE2DFAo.entity.DFAState;
 import RE2DFAo.entity.NFA;
@@ -22,7 +23,8 @@ public class Test {
     }
 
     public static void testNFA2DFA() throws DFAStatesException {
-        NFA nfa = RE2NFA.getRE2NFA().re2nfa("ab|*");
+        String re = RENormalize.getRENormalize("((ba*)*a)*(a|b)").getRegularExpression();
+        NFA nfa = RE2NFA.getRE2NFA().re2nfa(re);
         DFA dfa = NFA2DFA.getNfa2DFA().nfa2dfa(nfa);
         printDFA(dfa);
     }

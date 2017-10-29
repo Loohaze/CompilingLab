@@ -72,13 +72,13 @@ public class RE2NFA {
             NFAState beginState = new NFAState();
             NFAState endState = new NFAState();
 
-            if (ch != '·'){
+            if (ch != '.'){
                 beginState.setState(state_count++);
                 endState.setState(state_count++);
             }
 
             // '|' and '·' are all binary operation
-            if (ch == '|' || ch == '·'){
+            if (ch == '|' || ch == '.'){
                 NFAState second = stack.pop();
                 NFAState first = stack.pop();
                 NFAState second_end = getLastState(second);
@@ -99,9 +99,7 @@ public class RE2NFA {
                     first_end.addEdge("ε",second);
                     stack.push(first);
                 }
-            }
-            // '*' 操作
-            else if(ch == '*'){
+            }else if(ch == '*'){
                 NFAState last = stack.pop();
                 NFAState last_end = getLastState(last);
 
@@ -111,9 +109,7 @@ public class RE2NFA {
                 last_end.addEdge("ε",endState);
 
                 stack.push(beginState);
-            }
-            // ch 是一个 character
-            else {
+            }else {
                 beginState.addEdge(String.valueOf(ch),endState);
 
                 nfa.getStates().add(String.valueOf(ch));
