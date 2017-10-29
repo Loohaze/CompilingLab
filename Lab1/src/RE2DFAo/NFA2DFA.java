@@ -71,7 +71,7 @@ public class NFA2DFA {
         dfaEnds = new ArrayList<>();
         getDFAEnds(nfa.getEnds());
 
-        return new DFA(dfaBegin,dfaEnds,edges,dfaStatesSet);
+        return new DFA(dfaBegin,dfaEnds,dfaSet,edges,dfaStatesSet);
     }
 
     /**

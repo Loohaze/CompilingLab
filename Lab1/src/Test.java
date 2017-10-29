@@ -88,7 +88,6 @@ public class Test {
     }
 
 
-    //TODO
     public static void printDFA(DFA dfa){
         DFAState begin = dfa.getBegin();
         for (String edge : dfa.getEdges()){
@@ -96,19 +95,17 @@ public class Test {
         }
         System.out.println();
 
-        System.out.print(begin.getState());
-        for (int i = 0; i < dfa.getEdges().size(); i++){
-            System.out.print("\t"+begin.getNexts().get(i).getState());
+        for (DFAState dfaState : dfa.getAllStates()){
+            System.out.print(dfaState.getState());
+            for (int i = 0; i < dfaState.getEdges().size(); i++){
+                System.out.print("\t" + dfaState.getNexts().get(i).getState());
+            }
+            System.out.println();
         }
-
-        DFAState dfaState = begin;
-        for (int i = 0; i < dfa.getDfaStatesSet().size(); i++){
-
         }
 //        while(true){
 //            System.out.print(dfa.getBegin());
 //        }
-    }
 }
 
 

@@ -9,14 +9,17 @@ public class DFA {
 
     private ArrayList<DFAState> ends;
 
+    private ArrayList<DFAState> allStates;
+
     private Set<String> edges;
 
     private Set<Set<Integer>> dfaStatesSet;
 
 
-    public DFA(DFAState begin, ArrayList<DFAState> ends, Set<String> edges, Set<Set<Integer>> dfaStatesSet) {
+    public DFA(DFAState begin, ArrayList<DFAState> ends, ArrayList<DFAState> allStates, Set<String> edges, Set<Set<Integer>> dfaStatesSet) {
         this.begin = begin;
         this.ends = ends;
+        this.allStates = allStates;
         this.edges = edges;
         this.dfaStatesSet = dfaStatesSet;
     }
@@ -35,5 +38,9 @@ public class DFA {
 
     public ArrayList<DFAState> getEnds() {
         return ends;
+    }
+
+    public ArrayList<DFAState> getAllStates() {
+        return allStates;
     }
 }
