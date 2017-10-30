@@ -87,7 +87,35 @@ public class NFA2DFA {
         divideStates(startStateSet,3,equivalentMap);
         divideStates(endStateSet,1000,equivalentMap);
 
-        
+        for (Map.Entry<Integer,List<DFAState>> entry : equivalentMap.entrySet()){
+            if (entry.getValue().size() > 1){
+                DFAState base = entry.getValue().get(0);
+                for (int i = 1; i < entry.getValue().size(); i++){
+                    DFAState otherDFA = entry.getValue().get(i);
+                    otherDFA.setState(base.getState());
+                    otherDFA.setStates(base.getStates());
+                    otherDFA.setEdges(base.getEdges());
+                    otherDFA.setNexts(base.getNexts());
+                }
+            }
+        }
+
+        HashSet<Integer> set = new HashSet();
+        for (int i = 0; i < dfaSet.size(); i++){
+            if (!set.contains(dfaSet.get(i).getState())){
+                set.add(dfaSet.get(i).getState());
+            }else{
+                dfaSet.remove(i);
+            }
+        }
+        set.clear();
+        for (int i = 0; i < dfaEnds.size(); i++){
+            if (!set.contains(dfaEnds.get(i).getState())){
+                set.add(dfaEnds.get(i).getState());
+            }else{
+                dfaEnds.remove(i);
+            }
+        }
     }
 
 

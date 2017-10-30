@@ -30,6 +30,14 @@ public class DFAState {
         nexts.add(next);
     }
 
+    public void setEdges(List<String> edges) {
+        this.edges = edges;
+    }
+
+    public void setNexts(List<DFAState> nexts) {
+        this.nexts = nexts;
+    }
+
     public void setState(int state) {
         this.state = state;
     }
