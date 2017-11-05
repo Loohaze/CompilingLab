@@ -11,27 +11,6 @@ import java.util.*;
 
 public class NFA2DFA {
 
-    public static void main(String[] args) {
-        NFA2DFA nfa2DFA = NFA2DFA.getNfa2DFA();
-        NFAState n1 = new NFAState(1);
-        NFAState n2 = new NFAState(2);
-        NFAState n3 = new NFAState(3);
-        NFAState n4 = new NFAState(4);
-        NFAState n5 = new NFAState(5);
-        NFAState n6 = new NFAState(6);
-        NFAState n7 = new NFAState(7);
-        n1.addEdge("ε",n2);
-        n1.addEdge("ε",n3);
-        n2.addEdge("ε",n4);
-        n3.addEdge("b",n5);
-        n4.addEdge("a",n6);
-        n4.addEdge("ε",n7);
-        Set<NFAState> set = nfa2DFA.getEpsilonClosureByNFAState(new HashSet<>(),n1);
-        Set<NFAState> set1 = nfa2DFA.getStatesByEpsilonClosure(set,"a");
-        for (NFAState i : set){
-            System.out.println(i.getState());
-        }
-    }
 
     private static NFA2DFA nfa2DFA;
 
@@ -49,6 +28,7 @@ public class NFA2DFA {
 
 
     private int index;
+    private int optimizeIndex;
     private Set<String> edges;   // dfa中的边的集合
     private Set<Set<Integer>> dfaStatesSet;  //dfa中的状态的nfa集合的集合
     private ArrayList<DFAState> dfaSet; // dfa中各个状态的集合
@@ -82,10 +62,24 @@ public class NFA2DFA {
     public void dfaOptimize(){
 
         equivalentMap = new HashMap<>();
-        equivalentMap.put(1,startStateSet);
-        equivalentMap.put(2,endStateSet);
-        divideStates(startStateSet,3,equivalentMap);
-        divideStates(endStateSet,1000,equivalentMap);
+        equivalentMap.put(0,startStateSet);
+        equivalentMap.put(1,endStateSet);
+        optimizeIndex = 2;
+
+
+        HashMap<Integer,List<DFAState>> temp = new HashMap<>();
+        while (!isHashMapEqual(temp,equivalentMap)){
+            temp.clear();
+            temp.putAll(equivalentMap);
+            int j = 0;
+            while(j < optimizeIndex){
+                if (equivalentMap.keySet().contains(j)){
+                    divideStates(equivalentMap.get(j));
+                    j++;
+                }
+                j++;
+            }
+        }
 
         for (Map.Entry<Integer,List<DFAState>> entry : equivalentMap.entrySet()){
             if (entry.getValue().size() > 1){
@@ -106,14 +100,17 @@ public class NFA2DFA {
                 set.add(dfaSet.get(i).getState());
             }else{
                 dfaSet.remove(i);
+                i--;
             }
         }
         set.clear();
+
         for (int i = 0; i < dfaEnds.size(); i++){
             if (!set.contains(dfaEnds.get(i).getState())){
                 set.add(dfaEnds.get(i).getState());
             }else{
                 dfaEnds.remove(i);
+                i--;
             }
         }
     }
@@ -121,21 +118,21 @@ public class NFA2DFA {
 
 
 
-    /**
-     * 计算epsilon闭包
-     * @param set
-     * @param state
-     * @return
-     */
-    private Set<NFAState> getEpsilonClosureByNFAState(Set<NFAState> set,NFAState state){
-        set.add(state);
-        for (int i = 0; i < state.getEdges().size(); i++){
-            if (state.getEdges().get(i).equals("ε")){
-                getEpsilonClosureByNFAState(set,state.getNexts().get(i));
+        /**
+         * 计算epsilon闭包
+         * @param set
+         * @param state
+         * @return
+         */
+        private Set<NFAState> getEpsilonClosureByNFAState(Set<NFAState> set,NFAState state){
+            set.add(state);
+            for (int i = 0; i < state.getEdges().size(); i++){
+                if (state.getEdges().get(i).equals("ε")){
+                    getEpsilonClosureByNFAState(set,state.getNexts().get(i));
+                }
             }
+            return set;
         }
-        return set;
-    }
 
     /**
      * 根据epsilon闭包 和 边 来确定状态
@@ -209,7 +206,7 @@ public class NFA2DFA {
         }
     }
 
-    private void divideStates(List<DFAState> toBeDivided,int index,HashMap<Integer,List<DFAState>> equivalentMap){
+    private boolean divideStates(List<DFAState> toBeDivided){
         List<DFAState> subjectsStates1 = new ArrayList<>();
         List<DFAState> subjectsStates2 = new ArrayList<>();
         if (toBeDivided.size() > 1){
@@ -224,20 +221,21 @@ public class NFA2DFA {
                 }
             }
             if (equivalentMap.containsValue(subjectsStates1) || equivalentMap.containsValue(subjectsStates2)){
-                return;
+                return false;
             }
             equivalentMap.remove(getIndex(base,equivalentMap));
-            equivalentMap.put(index++,subjectsStates1);
-            equivalentMap.put(index++,subjectsStates2);
+            equivalentMap.put(optimizeIndex++,subjectsStates2);
+            equivalentMap.put(optimizeIndex++,subjectsStates1);
+            return true;
         }else{
-            return;
+            return false;
         }
-        if (subjectsStates1.size() > 1){
-            divideStates(subjectsStates1,index,equivalentMap);
-        }
-        if (subjectsStates2.size() > 1){
-            divideStates(subjectsStates2,index,equivalentMap);
-        }
+//        if (subjectsStates1.size() > 1){
+//            divideStates(subjectsStates1,index,equivalentMap);
+//        }
+//        if (subjectsStates2.size() > 1){
+//            divideStates(subjectsStates2,index,equivalentMap);
+//        }
     }
 
     /**
@@ -317,6 +315,26 @@ public class NFA2DFA {
         return false;
     }
 
+    private boolean isHashMapEqual(HashMap<Integer,List<DFAState>> map1, HashMap<Integer,List<DFAState>> map2){
+        if (map1 == null && map2 == null){
+            return true;
+        }
+        if (map1 == null || map2 == null || map1.size() != map2.size() || map1.size() == 0 || map2.size() == 0){
+            return false;
+        }
+
+        ArrayList<List<DFAState>> list1 = new ArrayList<>();
+        for (Map.Entry<Integer,List<DFAState>> entry : map1.entrySet()){
+            list1.add(entry.getValue());
+        }
+
+        for (Map.Entry<Integer,List<DFAState>> entry : map2.entrySet()){
+            if (!list1.contains(entry.getValue())){
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * 判断两个Set中元素是否相同

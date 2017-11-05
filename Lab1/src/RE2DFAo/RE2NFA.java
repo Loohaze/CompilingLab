@@ -10,16 +10,6 @@ import java.util.Stack;
 
 public class RE2NFA {
 
-    public static void main(String[] args) {
-        RE2NFA re2NFA = RE2NFA.getRE2NFA();
-        re2NFA.re2nfa("abc|c*b···");
-
-        NFA nfa = re2NFA.nfa;
-        System.out.println(nfa.getBegin().getState());
-        System.out.println(getLastState(nfa.getBegin()).getState());
-        System.out.println(nfa.getStates().size());
-        System.out.println(nfa.getEnds().size());
-    }
 
     private static RE2NFA re2NFA;
 

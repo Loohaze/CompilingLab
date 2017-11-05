@@ -10,7 +10,7 @@ public class Analyzer {
     private static int m; // word 数组中指针的位置
     private static long sum; // 记录整数的大小
     private static char[] word; // 记录变量名称
-    private static final String inputFile = "input.txt";
+    private static final String inputFile = "impl1sources/input.txt";
 
     private static String[] keywords = {"public","private","protected","final","void","static","strictfp","abstract","transient","synchronized","volatile","native",
                                  "boolean","int","long","short","byte","float","double","char","class","interface",

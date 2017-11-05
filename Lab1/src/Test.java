@@ -23,9 +23,13 @@ public class Test {
     }
 
     public static void testNFA2DFA() throws DFAStatesException {
-        String re = RENormalize.getRENormalize("((ba*)*a)*(a|b)").getRegularExpression();
+        String re = RENormalize.getRENormalize("abc|acd").getRegularExpression();
         NFA nfa = RE2NFA.getRE2NFA().re2nfa(re);
         DFA dfa = NFA2DFA.getNfa2DFA().nfa2dfa(nfa);
+        for (DFAState end : dfa.getEnds()){
+            System.out.print(end.getState() + " ");
+        }
+        System.out.println();
         printDFA(dfa);
     }
     /**
